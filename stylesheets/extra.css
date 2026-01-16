@@ -1,0 +1,16 @@
+/* Navigation font sizes - smaller at deeper levels */
+
+/* Level 1: Section headers (Getting Started, Core Concepts, etc.) */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link {
+  font-size: 0.8rem;
+}
+
+/* Level 2: Pages within sections */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__list > .md-nav__item > .md-nav__link {
+  font-size: 0.7rem;
+}
+
+/* Level 3: Sub-pages (if any) */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__list > .md-nav__item > .md-nav__list > .md-nav__item > .md-nav__link {
+  font-size: 0.65rem;
+}
