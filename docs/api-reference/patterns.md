@@ -2,11 +2,21 @@
 
 This page provides production-ready patterns for common deep learning operations, focused on LLM and VLM workloads.
 
+!!! warning "What cuDNN Can Actually Fuse"
+    cuDNN graphs have limits on what can be fused together. A single graph typically handles:
+
+    - **SDPA**: Q, K, V → attention output (this IS heavily fused internally)
+    - **Normalization**: input → normalized output (with optional bias/scale)
+    - **Conv + activation**: convolution → activation (e.g., ReLU, SiLU)
+    - **MatMul + bias + activation**: limited fusion
+
+    A full transformer layer requires **multiple separate graphs** plus PyTorch operations. The examples below show realistic patterns, not magical full-layer fusion.
+
 ## LLM Patterns
 
 ### Complete Transformer Layer
 
-The standard pre-norm transformer block used in modern LLMs:
+The standard pre-norm transformer block - note this uses **multiple small graphs**, not one fused graph:
 
 ```python
 import cudnn

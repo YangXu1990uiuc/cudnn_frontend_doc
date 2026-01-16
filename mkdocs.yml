@@ -68,16 +68,14 @@ nav:
 
   - Getting Started:
     - Installation: getting-started/installation.md
-    - Quick Start (SDPA): getting-started/llm-quickstart.md
-
-  - Background:
     - CUDA Ecosystem: concepts/cuda-ecosystem.md
     - Why cuDNN Frontend?: getting-started/introduction.md
+    - Quick Start (SDPA): getting-started/llm-quickstart.md
 
   - Core Concepts:
-    - Graphs: concepts/graphs.md
     - Tensors: concepts/tensors.md
     - Operations: concepts/operations.md
+    - Graphs: concepts/graphs.md
     - Execution Plans: concepts/execution-plans.md
 
   - Tutorials:

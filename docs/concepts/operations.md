@@ -359,56 +359,6 @@ y = graph.conv_fprop(x, w, name="encoder_conv1")
 # - "encoder_conv1::Y"      (output)
 ```
 
-## Common Patterns
-
-### ResNet Block
-
-```python
-def resnet_block(graph, x, w1, w2, shortcut_w=None):
-    # First conv + bn + relu
-    out = graph.conv_fprop(x, w1, padding=[1,1])
-    out = graph.batchnorm(out, ...)
-    out = graph.relu(out)
-
-    # Second conv + bn
-    out = graph.conv_fprop(out, w2, padding=[1,1])
-    out = graph.batchnorm(out, ...)
-
-    # Residual connection
-    if shortcut_w is not None:
-        shortcut = graph.conv_fprop(x, shortcut_w)
-    else:
-        shortcut = x
-
-    out = graph.add(out, shortcut)
-    out = graph.relu(out)
-    return out
-```
-
-### Transformer Block
-
-```python
-def transformer_block(graph, x, qkv_w, proj_w, ff1_w, ff2_w):
-    # Self-attention
-    residual = x
-    x = graph.layernorm(x, ...)
-    qkv = graph.matmul(x, qkv_w)
-    q, k, v = split_qkv(qkv)
-    attn, _ = graph.sdpa(q, k, v, ...)
-    attn = graph.matmul(attn, proj_w)
-    x = graph.add(residual, attn)
-
-    # FFN
-    residual = x
-    x = graph.layernorm(x, ...)
-    x = graph.matmul(x, ff1_w)
-    x = graph.gelu(x)
-    x = graph.matmul(x, ff2_w)
-    x = graph.add(residual, x)
-
-    return x
-```
-
 ## Next Steps
 
 Learn how cuDNN selects and optimizes execution plans.

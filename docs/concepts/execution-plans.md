@@ -243,35 +243,15 @@ with cudnn.Graph() as graph:
 print(graph)  # Shows selected algorithms, workspace, etc.
 ```
 
-## Multiple Execution Paths
-
-For complex graphs, cuDNN may generate different plans for different subgraphs:
-
-```mermaid
-graph LR
-    subgraph "Graph"
-        A[Conv1] --> B[ReLU] --> C[Conv2]
-    end
-
-    subgraph "Plan"
-        P1[Conv1 Plan: Winograd]
-        P2[ReLU: Fused with Conv1]
-        P3[Conv2 Plan: GEMM]
-    end
-
-    A --> P1
-    B --> P2
-    C --> P3
-```
-
 ## Execution Modes
 
-### Synchronous Execution
+### Asynchronous Execution (Default)
 
-Default mode - waits for completion:
+By default, cuDNN executes asynchronously - the call returns immediately while the GPU works:
 
 ```python
-result = graph(x, w, handle=handle)  # Blocks until done
+result = graph(x, w, handle=handle)  # Returns immediately, GPU runs async
+torch.cuda.synchronize()  # Wait for GPU to finish if needed
 ```
 
 ### With CUDA Graphs

@@ -353,6 +353,13 @@ torch.cuda.memory._dump_snapshot("memory_snapshot.pickle")
 - Efficient for inference
 - Strong for mixed workloads
 
+### Blackwell (B100, B200, B300, RTX 50xx)
+
+- Enhanced FP8 and FP4 support
+- Improved Transformer Engine
+- Higher memory bandwidth
+- Better multi-GPU scaling
+
 ## Summary
 
 | Optimization | Impact | Effort |

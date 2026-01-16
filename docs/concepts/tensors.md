@@ -4,38 +4,18 @@ Tensors are the fundamental data structures in deep learning. This page explains
 
 ## What is a Tensor?
 
-A tensor is a multi-dimensional array of numbers. In deep learning:
+A tensor is a multi-dimensional array of numbers. Unlike general-purpose frameworks, **cuDNN operations expect specific tensor dimensions**:
 
-| Dimensions | Name | Example Use |
-|------------|------|-------------|
-| 0D | Scalar | Loss value |
-| 1D | Vector | Bias, batch norm stats |
-| 2D | Matrix | Fully connected weights |
-| 3D | 3D Tensor | Sequences (batch, seq, features) |
-| 4D | 4D Tensor | Images (batch, channels, height, width) |
-| 5D+ | Higher | Video, 3D convolutions |
+| Operation | Required Dims | Shape | Notes |
+|-----------|---------------|-------|-------|
+| **MatMul** | 3D | `[B, M, K] × [B, K, N]` | Use `B=1` for non-batched |
+| **Attention (SDPA)** | 4D | `[B, H, S, D]` | Batch, Heads, SeqLen, HeadDim |
+| **Conv 2D** | 4D | `[N, C, H, W]` | Batch, Channels, Height, Width |
+| **Conv 3D** | 5D | `[N, C, D, H, W]` | Adds Depth dimension |
+| **Normalization** | 4D+ | `[N, C, ...]` | Varies by norm type |
 
-```mermaid
-graph TD
-    subgraph "Scalar (0D)"
-        S[5.0]
-    end
-
-    subgraph "Vector (1D)"
-        V1[1.0]
-        V2[2.0]
-        V3[3.0]
-    end
-
-    subgraph "Matrix (2D)"
-        M11[1] --- M12[2] --- M13[3]
-        M21[4] --- M22[5] --- M23[6]
-    end
-
-    subgraph "4D Tensor"
-        T[Batch x Channel x Height x Width]
-    end
-```
+!!! warning "Dimension Requirements"
+    cuDNN does **not** support arbitrary tensor dimensions. Each operation interprets tensors in a specific way. A 2D matrix `[M, N]` must be reshaped to `[1, M, N]` for matmul.
 
 ## Tensor Properties in cuDNN
 
@@ -75,6 +55,56 @@ cudnn.data_type.FP8_E4M3  # 8-bit (Hopper GPUs)
 cudnn.data_type.INT8      # 8-bit integer
 ```
 
+## cuDNN Tensors Are Descriptors, Not Memory
+
+!!! warning "Key Difference from PyTorch"
+    A **cuDNN tensor** is just a **descriptor** - it describes the shape, strides, and data type of a tensor, but **does not allocate any memory**.
+
+    A **PyTorch tensor** allocates and owns the underlying memory buffer.
+
+```python
+# PyTorch: Allocates memory
+x_torch = torch.randn(8, 64, 56, 56, device="cuda")  # Memory allocated!
+
+# cuDNN: Just a descriptor - NO memory allocated
+x_cudnn = graph.tensor(
+    dim=[8, 64, 56, 56],
+    stride=[200704, 1, 3584, 64],
+    data_type=cudnn.data_type.HALF,
+)
+# x_cudnn only describes layout - you must provide memory later
+```
+
+**Why this matters:**
+
+1. You allocate memory yourself (typically via PyTorch)
+2. You pass memory pointers to cuDNN at execution time
+3. cuDNN reads from / writes to your memory
+
+```python
+# Workflow:
+# 1. Create descriptor
+x = graph.tensor(dim=[8, 64], stride=[64, 1], data_type=cudnn.data_type.HALF)
+
+# 2. Build graph
+y = graph.matmul(x, w)
+y.set_output(True)
+graph.build()
+
+# 3. Allocate REAL memory (PyTorch)
+x_data = torch.randn(8, 64, device="cuda", dtype=torch.float16)
+y_data = torch.empty(8, 32, device="cuda", dtype=torch.float16)
+
+# 4. Execute with memory pointers
+graph.execute({x: x_data, y: y_data}, workspace, handle=handle)
+```
+
+This separation allows cuDNN to:
+
+- Plan execution before knowing actual data
+- Reuse the same graph with different memory buffers
+- Optimize memory layout without copying data
+
 ## Memory Layouts: The Critical Concept
 
 !!! warning "This is Important!"
@@ -82,24 +112,39 @@ cudnn.data_type.INT8      # 8-bit integer
 
 ### Logical vs Physical Layout
 
-A tensor has two layouts:
+A tensor has two layouts that can be **different**:
 
-- **Logical layout**: How you think about the data (e.g., [batch, channel, height, width])
-- **Physical layout**: How the data is actually stored in memory
+- **Logical layout**: How you index the data (e.g., `tensor[batch, channel, height, width]`)
+- **Physical layout**: How bytes are actually arranged in GPU memory
+
+**Strides determine the physical layout.** Two tensors with the same logical shape can have completely different memory layouts:
+
+```python
+# Same logical shape [2, 3, 4, 4], different physical layouts
+
+# NCHW layout - channels are contiguous
+nchw_strides = [48, 16, 4, 1]  # stride[C]=16 means channels grouped together
+
+# NHWC layout - pixels are contiguous
+nhwc_strides = [48, 1, 12, 3]  # stride[C]=1 means channels interleaved
+```
 
 ```mermaid
 graph TD
-    subgraph "Logical View (NCHW)"
-        L1[Batch 0, Channel 0]
-        L2[Batch 0, Channel 1]
-        L3[Batch 0, Channel 2]
+    subgraph "Logical View (always NCHW indexing)"
+        L1["tensor[0, 0, 0, 0]"]
+        L2["tensor[0, 1, 0, 0]"]
+        L3["tensor[0, 2, 0, 0]"]
     end
 
-    subgraph "Physical Memory (NHWC)"
-        P1[B0,H0,W0,C0] --> P2[B0,H0,W0,C1] --> P3[B0,H0,W0,C2]
-        P3 --> P4[B0,H0,W1,C0] --> P5[B0,H0,W1,C1] --> P6[B0,H0,W1,C2]
+    subgraph "Physical Memory (NHWC strides)"
+        P1[C0] --> P2[C1] --> P3[C2]
+        P3 --> P4[next pixel...]
     end
 ```
+
+!!! tip "Key Insight"
+    The **logical dimension order** (NCHW) stays the same for indexing. The **strides** control how that maps to physical memory. This is why you can have a "channels-last" tensor that you still index as `[N, C, H, W]`.
 
 ### NCHW vs NHWC
 
@@ -295,22 +340,30 @@ print(f"Strides: {x.stride()}")  # (200704, 1, 3584, 64)
 
 ## Common Mistakes
 
-!!! failure "Wrong Strides"
+!!! failure "Stride Mismatch"
+    The strides in your cuDNN descriptor **must match** your actual tensor's memory layout:
+
     ```python
-    # WRONG: Using NCHW strides for NHWC tensor
+    # PyTorch tensor is channels-last (NHWC in memory)
+    x_torch = torch.randn(8, 64, 56, 56, device="cuda").to(
+        memory_format=torch.channels_last
+    )
+    print(x_torch.stride())  # (200704, 1, 3584, 64) - NHWC!
+
+    # WRONG: cuDNN descriptor says NCHW but data is NHWC
     x = graph.tensor(
         dim=[8, 64, 56, 56],
-        stride=[200704, 3136, 56, 1],  # NCHW strides!
+        stride=[200704, 3136, 56, 1],  # NCHW strides - MISMATCH!
+    )
+
+    # CORRECT: Match the actual memory layout
+    x = graph.tensor(
+        dim=[8, 64, 56, 56],
+        stride=[200704, 1, 3584, 64],  # Matches x_torch.stride()
     )
     ```
 
-    ```python
-    # CORRECT: Use NHWC strides
-    x = graph.tensor(
-        dim=[8, 64, 56, 56],
-        stride=[200704, 1, 3584, 64],  # NHWC strides
-    )
-    ```
+    **Note:** NCHW layout is valid and works correctly - just slower on modern GPUs. The mistake is when strides don't match your actual data.
 
 !!! failure "Forgetting set_output"
     ```python
@@ -321,17 +374,6 @@ print(f"Strides: {x.stride()}")  # (200704, 1, 3584, 64)
     # CORRECT
     y = graph.conv_fprop(x, w)
     y.set_output(True)  # Now y is real
-    ```
-
-!!! failure "Mismatched Layouts"
-    ```python
-    # WRONG: PyTorch NCHW, but cuDNN expects NHWC
-    x = torch.randn(8, 64, 56, 56, device="cuda")  # Contiguous NCHW
-
-    # CORRECT: Convert to channels-last
-    x = torch.randn(8, 64, 56, 56, device="cuda").to(
-        memory_format=torch.channels_last
-    )
     ```
 
 ## Data Type Considerations
