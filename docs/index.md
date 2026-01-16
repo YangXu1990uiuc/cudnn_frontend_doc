@@ -1,9 +1,5 @@
 # Welcome to cuDNN Frontend
 
-<div style="text-align: center; padding: 20px;">
-<img src="images/cudnn-frontend-hero.png" alt="cuDNN Frontend" style="max-width: 600px;">
-</div>
-
 ## What is cuDNN Frontend?
 
 **cuDNN Frontend** is your gateway to GPU-accelerated deep learning. It provides a simple, intuitive interface to harness the power of NVIDIA's cuDNN library - the same technology powering the world's fastest AI systems.

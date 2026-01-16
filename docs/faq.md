@@ -40,6 +40,33 @@ Common questions and answers about cuDNN Frontend.
 
 SDPA (Scaled Dot-Product Attention) requires Ampere or newer.
 
+## Version Compatibility
+
+Critical for avoiding issues:
+
+| cuDNN Frontend | cuDNN Backend | CUDA | PyTorch |
+|---------------|---------------|------|---------|
+| 1.0.x | 8.9+ | 11.8+ | 2.0+ |
+| 1.1.x | 9.0+ | 12.0+ | 2.1+ |
+| 1.2.x | 9.1+ | 12.1+ | 2.2+ |
+
+**Check your versions:**
+
+```python
+import torch
+import cudnn
+
+print(f"PyTorch: {torch.__version__}")
+print(f"CUDA: {torch.version.cuda}")
+print(f"cuDNN (PyTorch): {torch.backends.cudnn.version()}")
+print(f"cuDNN Backend: {cudnn.backend_version()}")  # e.g., 90300 = 9.3.0
+print(f"GPU: {torch.cuda.get_device_name(0)}")
+print(f"Compute Capability: {torch.cuda.get_device_capability()}")
+```
+
+!!! warning "Version Mismatches"
+    Most cuDNN errors come from version mismatches. Always verify compatibility!
+
 ## Installation Issues
 
 ### "CUDA not available" error
@@ -55,7 +82,7 @@ False
 1. Check if GPU is recognized: `nvidia-smi`
 2. Install CUDA-enabled PyTorch:
    ```bash
-   pip install torch --index-url https://download.pytorch.org/whl/cu121
+   pip install torch --index-url https://download.pytorch.org/whl/cu126
    ```
 3. Verify CUDA toolkit: `nvcc --version`
 
@@ -265,6 +292,7 @@ print(f"Channels-last: {x.is_contiguous(memory_format=torch.channels_last)}")
 3. **cuDNN Documentation**: [docs.nvidia.com/deeplearning/cudnn](https://docs.nvidia.com/deeplearning/cudnn)
 
 When reporting issues, include:
+
 - GPU model (`nvidia-smi`)
 - cuDNN version (`cudnn.backend_version()`)
 - PyTorch version

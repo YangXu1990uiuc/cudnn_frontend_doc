@@ -65,27 +65,34 @@ extra_javascript:
 
 nav:
   - Home: index.md
+
   - Getting Started:
-    - Introduction: getting-started/introduction.md
     - Installation: getting-started/installation.md
-    - LLM Quick Start: getting-started/llm-quickstart.md
-    - Your First Graph: getting-started/first-graph.md
-    - Quick Reference: getting-started/quickstart.md
+    - Quick Start (SDPA): getting-started/llm-quickstart.md
+
+  - Background:
+    - CUDA Ecosystem: concepts/cuda-ecosystem.md
+    - Why cuDNN Frontend?: getting-started/introduction.md
+
   - Core Concepts:
-    - CUDA Ecosystem Overview: concepts/cuda-ecosystem.md
-    - What is a Graph?: concepts/graphs.md
-    - Tensors Explained: concepts/tensors.md
+    - Graphs: concepts/graphs.md
+    - Tensors: concepts/tensors.md
     - Operations: concepts/operations.md
     - Execution Plans: concepts/execution-plans.md
-    - Memory & Performance: concepts/memory-performance.md
+
   - Tutorials:
-    - Convolution Operations: tutorials/convolution.md
-    - Matrix Multiplication: tutorials/matmul.md
     - Attention (SDPA): tutorials/attention.md
-    - Normalization Layers: tutorials/normalization.md
-    - Building Custom Graphs: tutorials/custom-graphs.md
-  - API Reference:
+    - Matrix Multiplication: tutorials/matmul.md
+    - Convolution: tutorials/convolution.md
+    - Normalization: tutorials/normalization.md
+    - Custom Graphs: tutorials/custom-graphs.md
+
+  - Performance:
+    - Memory & Optimization: concepts/memory-performance.md
+    - Patterns & Best Practices: api-reference/patterns.md
+
+  - Reference:
     - Python API: api-reference/python.md
     - C++ API: api-reference/cpp.md
-    - Common Patterns: api-reference/patterns.md
-  - FAQ & Troubleshooting: faq.md
+
+  - FAQ: faq.md

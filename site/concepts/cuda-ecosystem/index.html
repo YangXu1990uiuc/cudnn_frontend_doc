@@ -723,85 +723,13 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#nvidia-software-stack-components" class="md-nav__link">
+  <a href="#component-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        NVIDIA Software Stack Components
+        Component Overview
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="NVIDIA Software Stack Components">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cuda-the-foundation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CUDA: The Foundation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cublas-basic-linear-algebra" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        cuBLAS: Basic Linear Algebra
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cudnn-deep-learning-primitives" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        cuDNN: Deep Learning Primitives
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cudnn-backend-vs-frontend" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        cuDNN Backend vs Frontend
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#tensorrt-inference-optimization" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TensorRT: Inference Optimization
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nccl-multi-gpu-communication" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        NCCL: Multi-GPU Communication
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -822,17 +750,6 @@
     <span class="md-ellipsis">
       
         How PyTorch Uses cuDNN
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#when-to-use-cudnn-frontend-directly" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        When to Use cuDNN Frontend Directly
       
     </span>
   </a>
@@ -943,17 +860,6 @@
     <span class="md-ellipsis">
       
         Version Compatibility
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Summary
       
     </span>
   </a>
@@ -1525,183 +1431,146 @@
         App[Your AI/ML Application]
     end
 
-    subgraph "Framework Layer"
+    subgraph "Training Frameworks"
         PT[PyTorch]
         TF[TensorFlow]
         JAX[JAX]
-        Oth[Other Frameworks]
+        Nemo[Nemo]
     end
 
-    subgraph "Library Layer"
-        FE[cuDNN Frontend]
-        cuBLAS[cuBLAS]
-        NCCL[NCCL]
+    subgraph "Inference Frameworks"
+        TRTLLM[TensorRT-LLM]
+        vLLM[vLLM]
+        SGLang[SGLang]
         TRT[TensorRT]
     end
 
-    subgraph "Backend Layer"
-        BE[cuDNN Backend]
+    subgraph "CUDA Libraries"
+        FI[FlashInfer]
+        cuDNN[cuDNN Frontend/Backend]
+        cuBLAS[cuBLAS]
+        CUTLASS[CUTLASS]
+        NCCL[NCCL]
+    end
+
+    subgraph "Runtime"
         CUDA[CUDA Runtime]
     end
 
-    subgraph "Hardware Layer"
+    subgraph "Hardware"
         GPU[NVIDIA GPU]
     end
 
-    App --&gt; PT &amp; TF &amp; JAX &amp; Oth
-    PT &amp; TF &amp; JAX &amp; Oth --&gt; FE &amp; cuBLAS &amp; NCCL &amp; TRT
-    FE --&gt; BE
-    cuBLAS &amp; BE --&gt; CUDA
-    TRT --&gt; FE &amp; BE
-    NCCL --&gt; CUDA
+    App --&gt; TRTLLM &amp; vLLM &amp; SGLang
+    App --&gt; PT &amp; TF &amp; JAX &amp; Nemo
+    App --&gt; TRT
+
+    TRTLLM &amp; vLLM &amp; SGLang --&gt; FI
+    FI --&gt; cuDNN
+    cuDNN --&gt; cuBLAS
+    cuDNN --&gt; CUTLASS
+
+    PT &amp; TF &amp; JAX &amp; Nemo --&gt; cuDNN &amp; cuBLAS &amp; NCCL
+
+    TRT --&gt; CUDA
+    cuDNN &amp; CUTLASS --&gt; CUDA
+    cuBLAS &amp; NCCL --&gt; CUDA
     CUDA --&gt; GPU
 
-    style FE fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
-    style BE fill:#fff9c4
+    style cuDNN fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    style FI fill:#e1bee7
     style GPU fill:#76ff03</code></pre>
-<h2 id="nvidia-software-stack-components">NVIDIA Software Stack Components<a class="headerlink" href="#nvidia-software-stack-components" title="Permanent link">&para;</a></h2>
-<h3 id="cuda-the-foundation">CUDA: The Foundation<a class="headerlink" href="#cuda-the-foundation" title="Permanent link">&para;</a></h3>
-<p><strong>CUDA</strong> (Compute Unified Device Architecture) is the foundation of GPU computing:</p>
+<h2 id="component-overview">Component Overview<a class="headerlink" href="#component-overview" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>Component</th>
-<th>Purpose</th>
+<th>What It Does</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>CUDA Toolkit</td>
-<td>Compiler, libraries, tools</td>
+<td><strong>Training Frameworks</strong></td>
+<td>PyTorch, TensorFlow, JAX, Nemo - high-level APIs for model development</td>
 </tr>
 <tr>
-<td>CUDA Runtime</td>
-<td>API for GPU management</td>
+<td><strong>Inference Frameworks</strong></td>
+<td>TensorRT-LLM, vLLM, SGLang - optimized LLM serving; TensorRT - general inference</td>
 </tr>
 <tr>
-<td>CUDA Driver</td>
-<td>Low-level GPU communication</td>
+<td><strong>FlashInfer</strong></td>
+<td>Unified kernel library for LLM inference (MLSys 2025 Best Paper)</td>
 </tr>
 <tr>
-<td>NVCC</td>
-<td>CUDA C++ compiler</td>
+<td><strong>cuDNN Frontend</strong></td>
+<td>Modern graph-based API for deep learning ops - <strong>what you're learning!</strong></td>
+</tr>
+<tr>
+<td><strong>cuDNN Backend</strong></td>
+<td>Core C library with optimized GPU kernels</td>
+</tr>
+<tr>
+<td><strong>cuBLAS</strong></td>
+<td>Basic linear algebra (GEMM, etc.)</td>
+</tr>
+<tr>
+<td><strong>CUTLASS</strong></td>
+<td>Template library for custom CUDA kernels</td>
+</tr>
+<tr>
+<td><strong>NCCL</strong></td>
+<td>Multi-GPU communication (AllReduce, etc.)</td>
+</tr>
+<tr>
+<td><strong>CUDA Runtime</strong></td>
+<td>Foundation for all GPU computing</td>
 </tr>
 </tbody>
 </table>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># CUDA provides basic GPU operations</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>  <span class="c1"># Allocates GPU memory via CUDA</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">@</span> <span class="n">x</span>  <span class="c1"># Uses CUDA for computation</span>
-</span></code></pre></div>
-<h3 id="cublas-basic-linear-algebra">cuBLAS: Basic Linear Algebra<a class="headerlink" href="#cublas-basic-linear-algebra" title="Permanent link">&para;</a></h3>
-<p><strong>cuBLAS</strong> handles fundamental linear algebra operations:</p>
-<ul>
-<li>Matrix multiplication (GEMM)</li>
-<li>Vector operations</li>
-<li>Basic transformations</li>
-</ul>
 <div class="admonition info">
-<p class="admonition-title">cuBLAS vs cuDNN</p>
-<p>cuBLAS handles general linear algebra. cuDNN specializes in deep learning operations with additional optimizations like operation fusion.</p>
+<p class="admonition-title">Key Dependency Chain for LLMs</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>TensorRT-LLM / vLLM / SGLang
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        ↓
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    FlashInfer
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        ↓
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  cuDNN Frontend  ← You are here!
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        ↓
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  cuDNN Backend
+</span></code></pre></div>
 </div>
-<h3 id="cudnn-deep-learning-primitives">cuDNN: Deep Learning Primitives<a class="headerlink" href="#cudnn-deep-learning-primitives" title="Permanent link">&para;</a></h3>
-<p><strong>cuDNN</strong> provides optimized implementations of deep learning operations:</p>
-<pre class="mermaid"><code>graph LR
-    subgraph "cuDNN Backend (C Library)"
-        BE1[Convolutions]
-        BE2[Attention]
-        BE3[Normalization]
-        BE4[Activations]
-        BE5[Pooling]
-    end
-
-    subgraph "cuDNN Frontend (C++/Python API)"
-        FE1[Graph Builder]
-        FE2[Automatic Optimization]
-        FE3[Heuristics Engine]
-    end
-
-    FE1 --&gt; BE1 &amp; BE2 &amp; BE3
-    FE2 --&gt; BE4 &amp; BE5</code></pre>
-<p><strong>cuDNN has two parts:</strong></p>
-<ol>
-<li><strong>cuDNN Backend</strong>: The core C library with optimized kernels</li>
-<li><strong>cuDNN Frontend</strong>: The modern API layer (what we're learning!)</li>
-</ol>
-<h3 id="cudnn-backend-vs-frontend">cuDNN Backend vs Frontend<a class="headerlink" href="#cudnn-backend-vs-frontend" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">When to Use cuDNN Frontend Directly</p>
 <table>
 <thead>
 <tr>
-<th>Aspect</th>
-<th>Backend (Legacy API)</th>
-<th>Frontend (Graph API)</th>
+<th>Scenario</th>
+<th>Recommended</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Interface</td>
-<td>C, verbose</td>
-<td>C++/Python, elegant</td>
+<td>Standard LLM deployment</td>
+<td>TensorRT-LLM, vLLM</td>
 </tr>
 <tr>
-<td>Graph Support</td>
-<td>Manual</td>
-<td>Native</td>
+<td>CNN/Vision deployment</td>
+<td>TensorRT</td>
 </tr>
 <tr>
-<td>Operation Fusion</td>
-<td>Manual</td>
-<td>Automatic</td>
+<td>Custom attention patterns</td>
+<td><strong>cuDNN Frontend</strong></td>
 </tr>
 <tr>
-<td>Optimization</td>
-<td>Manual tuning</td>
-<td>Auto-tuning</td>
+<td>Training optimization</td>
+<td><strong>cuDNN Frontend</strong> (via PyTorch)</td>
 </tr>
 <tr>
-<td>Code Lines</td>
-<td>Hundreds</td>
-<td>Tens</td>
-</tr>
-<tr>
-<td>Learning Curve</td>
-<td>Steep</td>
-<td>Gentle</td>
+<td>Research / Prototyping</td>
+<td><strong>cuDNN Frontend</strong></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Backend example (verbose):</strong></p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Just to set up a convolution descriptor!</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">cudnnConvolutionDescriptor_t</span><span class="w"> </span><span class="n">convDesc</span><span class="p">;</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">cudnnCreateConvolutionDescriptor</span><span class="p">(</span><span class="o">&amp;</span><span class="n">convDesc</span><span class="p">);</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">cudnnSetConvolution2dDescriptor</span><span class="p">(</span><span class="n">convDesc</span><span class="p">,</span><span class="w"> </span><span class="n">pad_h</span><span class="p">,</span><span class="w"> </span><span class="n">pad_w</span><span class="p">,</span><span class="w"> </span><span class="n">stride_h</span><span class="p">,</span><span class="w"> </span><span class="n">stride_w</span><span class="p">,</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">                                 </span><span class="n">dilation_h</span><span class="p">,</span><span class="w"> </span><span class="n">dilation_w</span><span class="p">,</span><span class="w"> </span><span class="n">CUDNN_CROSS_CORRELATION</span><span class="p">,</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">                                 </span><span class="n">CUDNN_DATA_FLOAT</span><span class="p">);</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1">// ... many more setup calls ...</span>
-</span></code></pre></div>
-<p><strong>Frontend equivalent (concise):</strong></p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">conv_fprop</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">stride</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
-</span></code></pre></div>
-<h3 id="tensorrt-inference-optimization">TensorRT: Inference Optimization<a class="headerlink" href="#tensorrt-inference-optimization" title="Permanent link">&para;</a></h3>
-<p><strong>TensorRT</strong> is NVIDIA's inference optimizer:</p>
-<ul>
-<li>Optimizes trained models for deployment</li>
-<li>Layer fusion, precision calibration</li>
-<li>Uses cuDNN internally for many operations</li>
-</ul>
-<pre class="mermaid"><code>graph LR
-    Model[Trained Model] --&gt; TRT[TensorRT]
-    TRT --&gt; Opt[Optimized Engine]
-    Opt --&gt; Inference[Fast Inference]
-
-    TRT -.uses.-&gt; FE[cuDNN Frontend]</code></pre>
-<h3 id="nccl-multi-gpu-communication">NCCL: Multi-GPU Communication<a class="headerlink" href="#nccl-multi-gpu-communication" title="Permanent link">&para;</a></h3>
-<p><strong>NCCL</strong> (NVIDIA Collective Communications Library) handles:</p>
-<ul>
-<li>Multi-GPU training</li>
-<li>Distributed computing</li>
-<li>AllReduce, AllGather operations</li>
-</ul>
+</div>
 <h2 id="framework-integration">Framework Integration<a class="headerlink" href="#framework-integration" title="Permanent link">&para;</a></h2>
 <h3 id="how-pytorch-uses-cudnn">How PyTorch Uses cuDNN<a class="headerlink" href="#how-pytorch-uses-cudnn" title="Permanent link">&para;</a></h3>
 <pre class="mermaid"><code>graph TD
@@ -1726,8 +1595,8 @@
     CD1 --&gt;|Yes| CD2
     CD1 --&gt;|No| CD3</code></pre>
 <p>When you write:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">output</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">output</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </span></code></pre></div>
 <p>PyTorch automatically:</p>
 <ol>
@@ -1735,48 +1604,6 @@
 <li>Selects the best cuDNN algorithm</li>
 <li>Executes optimized cuDNN kernels</li>
 </ol>
-<h3 id="when-to-use-cudnn-frontend-directly">When to Use cuDNN Frontend Directly<a class="headerlink" href="#when-to-use-cudnn-frontend-directly" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>Scenario</th>
-<th>Use Framework's cuDNN</th>
-<th>Use cuDNN Frontend Directly</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Standard layers</td>
-<td>✓</td>
-<td></td>
-</tr>
-<tr>
-<td>Custom fused operations</td>
-<td></td>
-<td>✓</td>
-</tr>
-<tr>
-<td>Maximum performance tuning</td>
-<td></td>
-<td>✓</td>
-</tr>
-<tr>
-<td>Framework development</td>
-<td></td>
-<td>✓</td>
-</tr>
-<tr>
-<td>Exotic architectures</td>
-<td></td>
-<td>✓</td>
-</tr>
-<tr>
-<td>Learning GPU internals</td>
-<td></td>
-<td>✓</td>
-</tr>
-</tbody>
-</table>
 <h2 id="gpu-architecture-awareness">GPU Architecture Awareness<a class="headerlink" href="#gpu-architecture-awareness" title="Permanent link">&para;</a></h2>
 <p>cuDNN Frontend optimizes for different GPU architectures:</p>
 <table>
@@ -1821,12 +1648,12 @@
 </tbody>
 </table>
 <p>cuDNN Frontend queries your GPU and selects optimal kernels:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># cuDNN automatically detects GPU capabilities</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">handle</span> <span class="o">=</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">create_handle</span><span class="p">()</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># The same code runs optimally on any supported GPU</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">with</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="k">as</span> <span class="n">graph</span><span class="p">:</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">conv_fprop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>  <span class="c1"># Uses best kernel for YOUR GPU</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># cuDNN automatically detects GPU capabilities</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">handle</span> <span class="o">=</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">create_handle</span><span class="p">()</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># The same code runs optimally on any supported GPU</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="k">with</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="k">as</span> <span class="n">graph</span><span class="p">:</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">conv_fprop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>  <span class="c1"># Uses best kernel for YOUR GPU</span>
 </span></code></pre></div>
 <h2 id="memory-hierarchy">Memory Hierarchy<a class="headerlink" href="#memory-hierarchy" title="Permanent link">&para;</a></h2>
 <p>Understanding GPU memory helps you write better code:</p>
@@ -1867,40 +1694,77 @@
         TF --&gt; NCCL_T[NCCL for multi-GPU]
     end
 
-    subgraph "Model Optimization"
-        TRT_O[TensorRT Optimizer]
-        TRT_O --&gt; INT8[INT8 Calibration]
-        TRT_O --&gt; FP8[FP8 Calibration]
+    subgraph "LLM Inference (Most Popular)"
+        TRTLLM[TensorRT-LLM]
+        TRTLLM --&gt; Triton_LLM[Triton + vLLM]
     end
 
-    subgraph "Inference Deployment"
-        TRT_I[TensorRT Runtime]
-        TRT_I --&gt; cuDNN_I[cuDNN Frontend]
+    subgraph "General Inference"
+        TRT_I[TensorRT]
         TRT_I --&gt; Triton[Triton Server]
     end
 
-    TF --&gt; TRT_O
-    TRT_O --&gt; TRT_I</code></pre>
+    subgraph "Custom/Research"
+        cuDNN_C[cuDNN Frontend]
+        cuDNN_C --&gt; Custom[Custom Attention/Ops]
+    end
+
+    TF --&gt; TRTLLM
+    TF --&gt; TRT_I
+    TF --&gt; cuDNN_C</code></pre>
+<div class="admonition tip">
+<p class="admonition-title">Choosing the Right Tool for Inference</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommended Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deploy LLaMA, Mistral, GPT, etc.</td>
+<td><strong>TensorRT-LLM</strong></td>
+</tr>
+<tr>
+<td>Deploy CNN, Vision models</td>
+<td><strong>TensorRT</strong></td>
+</tr>
+<tr>
+<td>Custom attention patterns</td>
+<td><strong>cuDNN Frontend</strong></td>
+</tr>
+<tr>
+<td>Training</td>
+<td><strong>cuDNN Frontend</strong> (via PyTorch)</td>
+</tr>
+<tr>
+<td>Research / Prototyping</td>
+<td><strong>cuDNN Frontend</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
 <h2 id="debugging-the-stack">Debugging the Stack<a class="headerlink" href="#debugging-the-stack" title="Permanent link">&para;</a></h2>
 <p>When things go wrong, knowing the stack helps:</p>
 <h3 id="check-cuda">Check CUDA<a class="headerlink" href="#check-cuda" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>nvidia-smi<span class="w">          </span><span class="c1"># GPU status</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>nvcc<span class="w"> </span>--version<span class="w">      </span><span class="c1"># CUDA compiler version</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>nvidia-smi<span class="w">          </span><span class="c1"># GPU status</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>nvcc<span class="w"> </span>--version<span class="w">      </span><span class="c1"># CUDA compiler version</span>
 </span></code></pre></div>
 <h3 id="check-cudnn">Check cuDNN<a class="headerlink" href="#check-cudnn" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cudnn</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN Backend Version: </span><span class="si">{</span><span class="n">cudnn</span><span class="o">.</span><span class="n">backend_version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># e.g., 90300 means 9.3.0</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cudnn</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN Backend Version: </span><span class="si">{</span><span class="n">cudnn</span><span class="o">.</span><span class="n">backend_version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># e.g., 90300 means 9.3.0</span>
 </span></code></pre></div>
 <h3 id="check-pytorch-cuda">Check PyTorch CUDA<a class="headerlink" href="#check-pytorch-cuda" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PyTorch CUDA: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">cuda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN enabled: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">enabled</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PyTorch CUDA: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">cuda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN enabled: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">enabled</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="enable-cudnn-logging">Enable cuDNN Logging<a class="headerlink" href="#enable-cudnn-logging" title="Permanent link">&para;</a></h3>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_FRONTEND_LOG_INFO</span><span class="o">=</span><span class="m">1</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_FRONTEND_LOG_FILE</span><span class="o">=</span>stdout
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_FRONTEND_LOG_INFO</span><span class="o">=</span><span class="m">1</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_FRONTEND_LOG_FILE</span><span class="o">=</span>stdout
 </span></code></pre></div>
 <h2 id="version-compatibility">Version Compatibility<a class="headerlink" href="#version-compatibility" title="Permanent link">&para;</a></h2>
 <p>Critical for avoiding issues:</p>
@@ -1938,49 +1802,6 @@
 <p class="admonition-title">Version Mismatches</p>
 <p>Most cuDNN errors come from version mismatches. Always verify compatibility!</p>
 </div>
-<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Component</th>
-<th>Role</th>
-<th>Your Interaction</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>CUDA</strong></td>
-<td>GPU foundation</td>
-<td>Usually transparent</td>
-</tr>
-<tr>
-<td><strong>cuDNN Backend</strong></td>
-<td>Optimized DL kernels</td>
-<td>Via Frontend</td>
-</tr>
-<tr>
-<td><strong>cuDNN Frontend</strong></td>
-<td>Modern graph API</td>
-<td><strong>This is what you learn!</strong></td>
-</tr>
-<tr>
-<td><strong>cuBLAS</strong></td>
-<td>Linear algebra</td>
-<td>Often via frameworks</td>
-</tr>
-<tr>
-<td><strong>TensorRT</strong></td>
-<td>Inference optimization</td>
-<td>For deployment</td>
-</tr>
-<tr>
-<td><strong>NCCL</strong></td>
-<td>Multi-GPU communication</td>
-<td>For distributed training</td>
-</tr>
-</tbody>
-</table>
-<p>cuDNN Frontend is your <strong>friendly interface</strong> to the powerful cuDNN Backend, which in turn leverages CUDA to run optimized kernels on NVIDIA GPUs.</p>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <p>Now that you understand the ecosystem, let's dive into execution plans!</p>
 <p><a class="md-button md-button--primary" href="../execution-plans/">Execution Plans <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg></span></a></p>

@@ -64,3 +64,77 @@ To Run Documentation Locally:
   source .venv/bin/activate
   mkdocs serve
 
+=== Progress Notes (Iteration 2 - Fact Check) ===
+
+TensorRT/cuDNN Relationship Correction:
+- Verified that TensorRT 8.6.3+ removed cuDNN dependency
+- cuDNN is now optional in TensorRT, only needed for deprecated layers
+- Blackwell GPUs/CUDA 13 don't support cuDNN with TensorRT at all
+
+Updated docs/concepts/cuda-ecosystem.md:
+1. Removed diagram arrows showing TensorRT using cuDNN
+2. Updated TensorRT section to note v8.6.3+ independence
+3. Added clarification note about when to use cuDNN vs TensorRT
+4. Updated "Typical Deep Learning Stack" diagram to separate the tools
+5. Added tip explaining use cases for each (TensorRT for standard models, cuDNN for custom ops)
+
+=== Progress Notes (Iteration 2b - TensorRT-LLM) ===
+
+Added TensorRT-LLM to documentation:
+- TensorRT-LLM is the popular choice for LLM inference (not plain TensorRT)
+- PyTorch dependency in TensorRT-LLM is for model loading, not inference
+
+Updated docs/concepts/cuda-ecosystem.md:
+1. Added TensorRT-LLM to main architecture diagram
+2. Created comparison table: TensorRT vs TensorRT-LLM use cases
+3. Updated "Typical Deep Learning Stack" with LLM-specific inference path
+4. Added decision table for choosing the right tool
+5. Updated Summary table to include TensorRT-LLM
+
+=== Progress Notes (Iteration 2c - FlashInfer Correction) ===
+
+Corrected TensorRT-LLM/cuDNN relationship:
+- TensorRT-LLM depends on FlashInfer (unified kernel library)
+- FlashInfer can use multiple backends: cuDNN, CUTLASS, TRT-LLM kernels, FlashAttention
+- So cuDNN IS used indirectly: TensorRT-LLM → FlashInfer → cuDNN (when selected)
+
+Updated docs/concepts/cuda-ecosystem.md:
+1. Added FlashInfer to main architecture diagram with dotted line to cuDNN
+2. Updated LLM inference diagram to show FlashInfer backend selection
+3. Added note explaining the FlashInfer connection and backend selection
+
+=== Progress Notes (Iteration 2d - Separate Products) ===
+
+Restructured to show TensorRT, TensorRT-LLM, and FlashInfer as separate products:
+
+1. **TensorRT section**: General inference optimizer for CNNs/vision, no cuDNN dependency
+2. **TensorRT-LLM section**: Separate product for LLMs, depends on FlashInfer
+3. **FlashInfer section**: NVIDIA's unified kernel library (MLSys 2025 Best Paper)
+   - Used by TRT-LLM, vLLM, SGLang
+   - Shows how cuDNN fits in modern LLM stack
+
+Added comparison table showing TensorRT vs TensorRT-LLM differences
+
+=== Progress Notes (Iteration 3 - Navigation Restructure) ===
+
+Reorganized documentation menu structure:
+
+Old structure (messy):
+- Getting Started (5 items, overlapping)
+- Core Concepts (included background context)
+- Tutorials (CNN-first order)
+- API Reference (included patterns)
+
+New structure (clean, LLM-first):
+- Getting Started: Installation, Quick Start (SDPA)
+- Background: CUDA Ecosystem, Why cuDNN Frontend?
+- Core Concepts: Graphs, Tensors, Operations, Execution Plans
+- Tutorials: SDPA first, then MatMul, Conv, Norm, Custom
+- Performance: Memory & Optimization, Patterns & Best Practices
+- Reference: Python API, C++ API
+- FAQ
+
+Removed orphaned files:
+- getting-started/first-graph.md (redundant with tutorials/convolution.md)
+- getting-started/quickstart.md (redundant with tutorials)
+

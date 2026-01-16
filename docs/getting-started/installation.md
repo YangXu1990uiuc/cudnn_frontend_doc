@@ -119,7 +119,21 @@ Make sure CUDA is in your path:
 
 ### Virtual Environment (Recommended)
 
-We recommend using a virtual environment:
+We recommend using a virtual environment. **UV is the fastest option:**
+
+=== "uv (Recommended)"
+
+    ```bash
+    # Install uv if you haven't
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+
+    # Create and activate environment
+    uv venv cudnn-env
+    source cudnn-env/bin/activate  # Linux/macOS
+
+    # Install packages (10-100x faster than pip)
+    uv pip install nvidia-cudnn-frontend torch
+    ```
 
 === "venv"
 
@@ -213,7 +227,7 @@ SUCCESS: cuDNN Frontend is working!
     2. Check CUDA installation: `nvcc --version`
     3. Ensure PyTorch CUDA version matches your system:
        ```bash
-       pip install torch --index-url https://download.pytorch.org/whl/cu121
+       pip install torch --index-url https://download.pytorch.org/whl/cu126
        ```
 
 ??? failure "cuDNN version mismatch"
@@ -252,13 +266,13 @@ If you're still having issues:
 1. Check the [GitHub Issues](https://github.com/NVIDIA/cudnn-frontend/issues)
 2. Search the [NVIDIA Developer Forums](https://forums.developer.nvidia.com/)
 3. Open a new issue with:
-   - Your GPU model
-   - CUDA version
-   - Python version
-   - Full error message
+      - Your GPU model
+      - CUDA version
+      - Python version
+      - Full error message
 
 ## Next Steps
 
-Your environment is ready! Let's build your first graph.
+Your environment is ready! Let's build your first attention graph.
 
-[Build Your First Graph :material-arrow-right:](first-graph.md){ .md-button .md-button--primary }
+[Quick Start (SDPA) :material-arrow-right:](llm-quickstart.md){ .md-button .md-button--primary }
