@@ -172,6 +172,6 @@ In this guide, you'll learn:
 
 ## Next Steps
 
-Ready to get started? Let's set up your environment!
+Ready to see cuDNN Frontend in action? Let's build your first attention graph!
 
-[Install cuDNN Frontend :material-arrow-right:](installation.md){ .md-button .md-button--primary }
+[Quick Start (SDPA) :material-arrow-right:](llm-quickstart.md){ .md-button .md-button--primary }

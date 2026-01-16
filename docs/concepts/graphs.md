@@ -355,6 +355,6 @@ except Exception as e:
 
 ## Next Steps
 
-Now that you understand graphs, let's look at tensors in detail.
+Now that you understand graphs, learn how cuDNN selects and optimizes execution plans.
 
-[Understanding Tensors :material-arrow-right:](tensors.md){ .md-button .md-button--primary }
+[Execution Plans :material-arrow-right:](execution-plans.md){ .md-button .md-button--primary }

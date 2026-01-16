@@ -36,7 +36,7 @@ Common questions and answers about cuDNN Frontend.
 | Ampere (SM80) | A100, RTX 30xx | Yes |
 | Ada (SM89) | RTX 40xx | Yes |
 | Hopper (SM90) | H100 | Yes (+ FP8) |
-| Blackwell (SM100) | B100, RTX 50xx | Yes |
+| Blackwell (SM100) | B100, B200, B300, RTX 50xx | Yes |
 
 SDPA (Scaled Dot-Product Attention) requires Ampere or newer.
 

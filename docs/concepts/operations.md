@@ -361,6 +361,6 @@ y = graph.conv_fprop(x, w, name="encoder_conv1")
 
 ## Next Steps
 
-Learn how cuDNN selects and optimizes execution plans.
+Learn how to combine operations into computation graphs.
 
-[Execution Plans :material-arrow-right:](execution-plans.md){ .md-button .md-button--primary }
+[Understanding Graphs :material-arrow-right:](graphs.md){ .md-button .md-button--primary }

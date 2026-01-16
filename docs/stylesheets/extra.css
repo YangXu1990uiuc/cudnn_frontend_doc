@@ -1,0 +1,108 @@
+/* Navigation font sizes and spacing - smaller at deeper levels */
+
+/* Level 1: Section headers (Getting Started, Core Concepts, etc.) */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.6;
+  padding: 0.6rem 0.6rem;
+}
+
+/* Level 2: Pages within sections */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__list > .md-nav__item > .md-nav__link {
+  font-size: 0.65rem;
+  font-weight: 400;
+  line-height: 1.3;
+  padding: 0.35rem 0.6rem;
+}
+
+/* Level 3: Sub-pages (if any) */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__list > .md-nav__item > .md-nav__list > .md-nav__item > .md-nav__link {
+  font-size: 0.55rem;
+  font-weight: 400;
+  line-height: 1.1;
+  padding: 0.25rem 0.6rem;
+}
+
+/* ============================================
+   Main content body - smaller and more compact
+   ============================================ */
+
+/* Base body text */
+.md-content {
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* Paragraphs */
+.md-content p {
+  margin-bottom: 0.6em;
+}
+
+/* Headings - tighter spacing */
+.md-content h1 {
+  font-size: 1.6rem;
+  margin: 0.8em 0 0.4em;
+}
+
+.md-content h2 {
+  font-size: 1.3rem;
+  margin: 0.7em 0 0.35em;
+}
+
+.md-content h3 {
+  font-size: 1.1rem;
+  margin: 0.6em 0 0.3em;
+}
+
+.md-content h4 {
+  font-size: 0.95rem;
+  margin: 0.5em 0 0.25em;
+}
+
+/* Lists - tighter */
+.md-content ul,
+.md-content ol {
+  margin-bottom: 0.5em;
+}
+
+.md-content li {
+  margin-bottom: 0.2em;
+}
+
+/* Code blocks */
+.md-content pre {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  margin: 0.5em 0;
+}
+
+.md-content code {
+  font-size: 0.85em;
+}
+
+/* Tables */
+.md-content table {
+  font-size: 0.75rem;
+}
+
+.md-content th,
+.md-content td {
+  padding: 0.4em 0.6em;
+}
+
+/* Admonitions (tip, warning, etc.) */
+.md-content .admonition {
+  font-size: 0.78rem;
+  margin: 0.6em 0;
+}
+
+.md-content .admonition-title {
+  font-size: 0.8rem;
+  padding: 0.4em 0.6em;
+}
+
+/* Mermaid diagrams - slightly smaller */
+.mermaid {
+  font-size: 0.85rem;
+}
