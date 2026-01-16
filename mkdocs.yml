@@ -1,0 +1,91 @@
+site_name: cuDNN Frontend - The Easy Guide
+site_description: A beginner-friendly guide to NVIDIA cuDNN Frontend
+site_author: NVIDIA Documentation Team
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: green
+      accent: light green
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: green
+      accent: light green
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    logo: material/chip
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - pymdownx.arithmatex:
+      generic: true
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Introduction: getting-started/introduction.md
+    - Installation: getting-started/installation.md
+    - LLM Quick Start: getting-started/llm-quickstart.md
+    - Your First Graph: getting-started/first-graph.md
+    - Quick Reference: getting-started/quickstart.md
+  - Core Concepts:
+    - CUDA Ecosystem Overview: concepts/cuda-ecosystem.md
+    - What is a Graph?: concepts/graphs.md
+    - Tensors Explained: concepts/tensors.md
+    - Operations: concepts/operations.md
+    - Execution Plans: concepts/execution-plans.md
+    - Memory & Performance: concepts/memory-performance.md
+  - Tutorials:
+    - Convolution Operations: tutorials/convolution.md
+    - Matrix Multiplication: tutorials/matmul.md
+    - Attention (SDPA): tutorials/attention.md
+    - Normalization Layers: tutorials/normalization.md
+    - Building Custom Graphs: tutorials/custom-graphs.md
+  - API Reference:
+    - Python API: api-reference/python.md
+    - C++ API: api-reference/cpp.md
+    - Common Patterns: api-reference/patterns.md
+  - FAQ & Troubleshooting: faq.md

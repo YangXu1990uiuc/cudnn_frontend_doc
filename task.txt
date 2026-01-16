@@ -1,0 +1,66 @@
+Background:
+You are a technical writer heired by nvidia with good money, you need to work hard and smart to not get fired
+
+Tasks:
+1. download latest cudnn and clone latest cudnn_frontend
+2. rewrite the cudnn frontend documentation from scratch to make it easy, intuitive, and attractive
+3. generate good pictures to explain key concepts to the users
+4. pretend you are a newby engineer entering AI field (with college graduate level math and coding background but not expert) and trying to learn stuff, see whether things are easy to understand
+5. improve the documentation according to the feedback
+6. repeat 4 and 5 for 10 times
+
+Resources:
+1. there is a RTX5080 on the system you can run stuff on
+
+Requirements:
+1. develop stuff under this cudnn_frontend_doc folder, don't mess up rest of the system
+2. if you need special environment, create a UV venv under this folder.
+3. don't mess up this file, if you have better ideas, you can append below as new sections
+4. don't only focus on cudnn_frontend itself, introduce it in conjunction with cudnn backend and the bigger context of cuda ecosystem
+5. focus on cudnn graph API the cudnn frontend v1 API, don't focus on legacy API or frontend v0.x API
+6. focus more on what's more popular nowadays (LLM, VLM etc)
+
+=== Progress Notes (Iteration 1) ===
+
+Completed Tasks:
+1. Cloned cudnn-frontend repository from GitHub
+2. Created documentation structure with mkdocs-material theme
+3. Generated explanatory diagrams using matplotlib
+
+Documentation Structure Created:
+- Home page with overview
+- Getting Started:
+  - Introduction (explains why cuDNN Frontend exists)
+  - Installation guide
+  - LLM Quick Start (attention-focused for modern LLMs)
+  - First Graph tutorial (convolution basics)
+  - Quick Reference (common operations)
+- Core Concepts:
+  - CUDA Ecosystem Overview (broader context)
+  - Graphs, Tensors, Operations, Execution Plans
+  - Memory & Performance optimization
+- Tutorials:
+  - Convolution, MatMul, Attention, Normalization
+  - Custom Graphs
+- API Reference:
+  - Python API (Graph API v1 focused)
+  - C++ API
+  - Common Patterns (LLM/VLM focused)
+
+Key Design Decisions:
+1. Focus on Graph API (v1) - not legacy v0.x API
+2. Emphasize LLM/VLM use cases (SDPA, transformer blocks)
+3. Use mermaid diagrams for visual explanations
+4. Include runnable code examples
+5. Added common mistakes/troubleshooting sections
+
+Newbie Engineer Review Findings (Iteration 1):
+- Strengths: Clear explanations, step-by-step tutorials, good diagrams
+- Added: LLM-specific quick start due to popularity of LLMs
+- Added: More context about CUDA ecosystem and where Frontend fits
+- Added: Common patterns for production LLMs (GQA, RoPE, SwiGLU)
+
+To Run Documentation Locally:
+  source .venv/bin/activate
+  mkdocs serve
+
