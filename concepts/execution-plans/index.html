@@ -1,0 +1,2079 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A beginner-friendly guide to NVIDIA cuDNN Frontend">
+      
+      
+        <meta name="author" content="NVIDIA Documentation Team">
+      
+      
+      
+        <link rel="prev" href="../operations/">
+      
+      
+        <link rel="next" href="../memory-performance/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Execution Plans - cuDNN Frontend - The Easy Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="light-green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#execution-plans" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="cuDNN Frontend - The Easy Guide" class="md-header__button md-logo" aria-label="cuDNN Frontend - The Easy Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 4h12v1h3v2h-3v2h3v2h-3v2h3v2h-3v2h3v2h-3v1H6v-1H3v-2h3v-2H3v-2h3v-2H3V9h3V7H3V5h3zm5 11v3h1v-3zm2 0v3h1v-3zm2 0v3h1v-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            cuDNN Frontend - The Easy Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Execution Plans
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="light-green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="light-green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/introduction/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../cuda-ecosystem/" class="md-tabs__link">
+          
+  
+  
+  Core Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/convolution/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/python/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../faq/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ & Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="cuDNN Frontend - The Easy Guide" class="md-nav__button md-logo" aria-label="cuDNN Frontend - The Easy Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 4h12v1h3v2h-3v2h3v2h-3v2h3v2h-3v2h3v2h-3v1H6v-1H3v-2h3v-2H3v-2h3v-2H3V9h3V7H3V5h3zm5 11v3h1v-3zm2 0v3h1v-3zm2 0v3h1v-3z"/></svg>
+
+    </a>
+    cuDNN Frontend - The Easy Guide
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/llm-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/first-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your First Graph
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cuda-ecosystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA Ecosystem Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../graphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is a Graph?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensors Explained
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Execution Plans
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Execution Plans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-an-execution-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is an Execution Plan?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-planning-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Planning Process
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Planning Process">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-lowering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Lowering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-plan-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Plan Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-support-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Support Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-plan-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Plan Building
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#heuristic-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heuristic Modes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autotuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autotuning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Autotuning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#autotuning-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autotuning Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-autotune" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Autotune
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#understanding-cudnn-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding cuDNN Algorithms
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding cuDNN Algorithms">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#convolution-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Convolution Algorithms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attention Algorithms
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workspace-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspace Memory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workspace Memory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workspace-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspace Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan Serialization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plan Serialization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#serialization-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serialization Benefits
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execution-plan-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Plan Details
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multiple-execution-paths" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple Execution Paths
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execution-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Execution Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#synchronous-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Synchronous Execution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-cuda-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With CUDA Graphs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-execution-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging Execution Plans
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Execution Plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-support-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check Support Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Issues
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tips
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execution-plan-lifecycle-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Plan Lifecycle Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../memory-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory & Performance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/convolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Convolution Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/matmul/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matrix Multiplication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/attention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attention (SDPA)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalization Layers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/custom-graphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building Custom Graphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/cpp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Common Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ & Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="execution-plans">Execution Plans<a class="headerlink" href="#execution-plans" title="Permanent link">&para;</a></h1>
+<p>When you build a cuDNN graph, the system generates one or more <strong>execution plans</strong> - specific strategies for running your computation on the GPU. Understanding this process helps you optimize performance.</p>
+<h2 id="what-is-an-execution-plan">What is an Execution Plan?<a class="headerlink" href="#what-is-an-execution-plan" title="Permanent link">&para;</a></h2>
+<p>An execution plan is a concrete recipe for executing your graph:</p>
+<pre class="mermaid"><code>graph LR
+    subgraph "Your Graph"
+        G[Abstract Operations]
+    end
+
+    subgraph "Execution Plans"
+        P1[Plan 1: Algorithm A]
+        P2[Plan 2: Algorithm B]
+        P3[Plan 3: Algorithm C]
+    end
+
+    subgraph "GPU Execution"
+        E[Optimized Kernel]
+    end
+
+    G --&gt; P1 &amp; P2 &amp; P3
+    P1 --&gt;|Selected| E
+
+    style G fill:#bbdefb
+    style P1 fill:#c8e6c9
+    style P2 fill:#fff9c4
+    style P3 fill:#fff9c4
+    style E fill:#76ff03</code></pre>
+<h2 id="the-planning-process">The Planning Process<a class="headerlink" href="#the-planning-process" title="Permanent link">&para;</a></h2>
+<p>When you call <code>graph.build()</code> (or exit a context manager), several steps happen:</p>
+<h3 id="step-1-validation">Step 1: Validation<a class="headerlink" href="#step-1-validation" title="Permanent link">&para;</a></h3>
+<p>The graph checks for errors:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">graph</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>  <span class="c1"># Checks shapes, types, compatibility</span>
+</span></code></pre></div>
+<h3 id="step-2-lowering">Step 2: Lowering<a class="headerlink" href="#step-2-lowering" title="Permanent link">&para;</a></h3>
+<p>Your high-level graph is converted to cuDNN's internal representation:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">graph</span><span class="o">.</span><span class="n">build_operation_graph</span><span class="p">()</span>  <span class="c1"># Creates backend operation graph</span>
+</span></code></pre></div>
+<h3 id="step-3-plan-generation">Step 3: Plan Generation<a class="headerlink" href="#step-3-plan-generation" title="Permanent link">&para;</a></h3>
+<p>cuDNN uses heuristics to generate candidate execution plans:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">graph</span><span class="o">.</span><span class="n">create_execution_plans</span><span class="p">([</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">cudnn</span><span class="o">.</span><span class="n">heur_mode</span><span class="o">.</span><span class="n">A</span><span class="p">,</span>        <span class="c1"># Primary heuristic</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">cudnn</span><span class="o">.</span><span class="n">heur_mode</span><span class="o">.</span><span class="n">FALLBACK</span>  <span class="c1"># Backup heuristic</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">])</span>
+</span></code></pre></div>
+<h3 id="step-4-support-check">Step 4: Support Check<a class="headerlink" href="#step-4-support-check" title="Permanent link">&para;</a></h3>
+<p>Verify plans are supported on your hardware:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">graph</span><span class="o">.</span><span class="n">check_support</span><span class="p">()</span>  <span class="c1"># Ensures at least one plan works</span>
+</span></code></pre></div>
+<h3 id="step-5-plan-building">Step 5: Plan Building<a class="headerlink" href="#step-5-plan-building" title="Permanent link">&para;</a></h3>
+<p>Compile the selected plan(s):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">graph</span><span class="o">.</span><span class="n">build_plans</span><span class="p">()</span>  <span class="c1"># Prepares for execution</span>
+</span></code></pre></div>
+<h2 id="heuristic-modes">Heuristic Modes<a class="headerlink" href="#heuristic-modes" title="Permanent link">&para;</a></h2>
+<p>cuDNN offers different strategies for finding execution plans:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+<th>Speed</th>
+<th>Quality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>heur_mode.A</code></td>
+<td>Best quality heuristic</td>
+<td>Fast</td>
+<td>Best</td>
+</tr>
+<tr>
+<td><code>heur_mode.B</code></td>
+<td>Alternative heuristic</td>
+<td>Fast</td>
+<td>Good</td>
+</tr>
+<tr>
+<td><code>heur_mode.FALLBACK</code></td>
+<td>Maximum compatibility</td>
+<td>Fast</td>
+<td>Basic</td>
+</tr>
+<tr>
+<td><code>heur_mode.CUDNN_FIND</code></td>
+<td>Exhaustive search</td>
+<td>Slow</td>
+<td>Optimal</td>
+</tr>
+</tbody>
+</table>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Recommended: Primary + Fallback</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">create_execution_plans</span><span class="p">([</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">cudnn</span><span class="o">.</span><span class="n">heur_mode</span><span class="o">.</span><span class="n">A</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">cudnn</span><span class="o">.</span><span class="n">heur_mode</span><span class="o">.</span><span class="n">FALLBACK</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">])</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># For maximum performance (slower initial build):</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">graph</span><span class="o">.</span><span class="n">create_execution_plans</span><span class="p">([</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="n">cudnn</span><span class="o">.</span><span class="n">heur_mode</span><span class="o">.</span><span class="n">CUDNN_FIND</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="p">])</span>
+</span></code></pre></div>
+<h2 id="autotuning">Autotuning<a class="headerlink" href="#autotuning" title="Permanent link">&para;</a></h2>
+<p>Autotuning benchmarks multiple plans to find the fastest:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Build graph with autotuning</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">with</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="k">as</span> <span class="n">graph</span><span class="p">:</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">conv_fprop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">y</span><span class="o">.</span><span class="n">set_output</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># Get all candidate plans</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">graph</span><span class="o">.</span><span class="n">build_operation_graph</span><span class="p">()</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">graph</span><span class="o">.</span><span class="n">create_execution_plans</span><span class="p">([</span><span class="n">cudnn</span><span class="o">.</span><span class="n">heur_mode</span><span class="o">.</span><span class="n">A</span><span class="p">])</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c1"># Autotune to find best</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="n">workspace</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">get_workspace_size</span><span class="p">(),</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="n">best_plan</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">autotune</span><span class="p">(</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">x_gpu</span><span class="p">,</span> <span class="n">w</span><span class="p">:</span> <span class="n">w_gpu</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">y_gpu</span><span class="p">},</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>    <span class="n">workspace</span><span class="p">,</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    <span class="n">handle</span><span class="o">=</span><span class="n">handle</span>
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="autotuning-workflow">Autotuning Workflow<a class="headerlink" href="#autotuning-workflow" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph TD
+    A[Generate Candidate Plans] --&gt; B[Benchmark Plan 1]
+    B --&gt; C[Benchmark Plan 2]
+    C --&gt; D[Benchmark Plan N]
+    D --&gt; E[Select Fastest Plan]
+    E --&gt; F[Cache for Reuse]
+
+    style E fill:#c8e6c9
+    style F fill:#fff9c4</code></pre>
+<h3 id="when-to-autotune">When to Autotune<a class="headerlink" href="#when-to-autotune" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Development/prototyping</td>
+<td>Skip autotuning</td>
+</tr>
+<tr>
+<td>Production deployment</td>
+<td>Autotune once, cache result</td>
+</tr>
+<tr>
+<td>Batch size changes frequently</td>
+<td>Autotune each size</td>
+</tr>
+<tr>
+<td>Static workload</td>
+<td>Autotune once</td>
+</tr>
+</tbody>
+</table>
+<h2 id="understanding-cudnn-algorithms">Understanding cuDNN Algorithms<a class="headerlink" href="#understanding-cudnn-algorithms" title="Permanent link">&para;</a></h2>
+<p>Different algorithms trade off between memory and speed:</p>
+<h3 id="convolution-algorithms">Convolution Algorithms<a class="headerlink" href="#convolution-algorithms" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Algorithm</th>
+<th>Memory</th>
+<th>Speed</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IMPLICIT_GEMM</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Memory-constrained</td>
+</tr>
+<tr>
+<td>IMPLICIT_PRECOMP_GEMM</td>
+<td>Medium</td>
+<td>Fast</td>
+<td>Most cases</td>
+</tr>
+<tr>
+<td>GEMM</td>
+<td>High</td>
+<td>Fast</td>
+<td>Large filters</td>
+</tr>
+<tr>
+<td>FFT</td>
+<td>Very High</td>
+<td>Very Fast</td>
+<td>Large images</td>
+</tr>
+<tr>
+<td>WINOGRAD</td>
+<td>Medium</td>
+<td>Very Fast</td>
+<td>3x3 filters</td>
+</tr>
+</tbody>
+</table>
+<p>cuDNN Frontend selects automatically, but you can influence the choice through workspace size.</p>
+<h3 id="attention-algorithms">Attention Algorithms<a class="headerlink" href="#attention-algorithms" title="Permanent link">&para;</a></h3>
+<p>For SDPA, cuDNN may use:</p>
+<ul>
+<li><strong>Flash Attention</strong>: Memory-efficient, fast</li>
+<li><strong>Memory Efficient Attention</strong>: Lower memory, slightly slower</li>
+<li><strong>Standard Attention</strong>: For small sequences</li>
+</ul>
+<h2 id="workspace-memory">Workspace Memory<a class="headerlink" href="#workspace-memory" title="Permanent link">&para;</a></h2>
+<p>Execution plans may need temporary memory (workspace):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Query workspace size</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">workspace_size</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_workspace_size</span><span class="p">()</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Workspace needed: </span><span class="si">{</span><span class="n">workspace_size</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># Allocate workspace</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="n">workspace</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">workspace_size</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="c1"># Execute with workspace</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">graph</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">variant_pack</span><span class="p">,</span> <span class="n">workspace</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="n">handle</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="workspace-strategies">Workspace Strategies<a class="headerlink" href="#workspace-strategies" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Approach</th>
+<th>Trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Minimal</strong></td>
+<td>Small workspace limit</td>
+<td>Slower algorithms</td>
+</tr>
+<tr>
+<td><strong>Generous</strong></td>
+<td>Large workspace</td>
+<td>Faster algorithms</td>
+</tr>
+<tr>
+<td><strong>Adaptive</strong></td>
+<td>Query and allocate</td>
+<td>Balanced</td>
+</tr>
+</tbody>
+</table>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Limit workspace to 256MB</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">graph</span><span class="o">.</span><span class="n">create_execution_plans</span><span class="p">(</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="p">[</span><span class="n">cudnn</span><span class="o">.</span><span class="n">heur_mode</span><span class="o">.</span><span class="n">A</span><span class="p">],</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">max_workspace_size</span><span class="o">=</span><span class="mi">256</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="plan-serialization">Plan Serialization<a class="headerlink" href="#plan-serialization" title="Permanent link">&para;</a></h2>
+<p>Save compiled plans for faster startup:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Serialize to file</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">serialized</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;conv_plan.bin&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="c1"># Later: Deserialize</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;conv_plan.bin&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="n">serialized</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="n">graph</span> <span class="o">=</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">Graph</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="c1"># Graph is ready to execute immediately!</span>
+</span></code></pre></div>
+<h3 id="serialization-benefits">Serialization Benefits<a class="headerlink" href="#serialization-benefits" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Skip compilation on subsequent runs</li>
+<li>Share optimized plans across machines (same GPU)</li>
+<li>Cache autotuned results</li>
+</ul>
+<h2 id="execution-plan-details">Execution Plan Details<a class="headerlink" href="#execution-plan-details" title="Permanent link">&para;</a></h2>
+<p>Inspect what cuDNN chose:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Build graph</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">with</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="k">as</span> <span class="n">graph</span><span class="p">:</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">conv_fprop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">y</span><span class="o">.</span><span class="n">set_output</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="c1"># Print graph info</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="nb">print</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>  <span class="c1"># Shows selected algorithms, workspace, etc.</span>
+</span></code></pre></div>
+<h2 id="multiple-execution-paths">Multiple Execution Paths<a class="headerlink" href="#multiple-execution-paths" title="Permanent link">&para;</a></h2>
+<p>For complex graphs, cuDNN may generate different plans for different subgraphs:</p>
+<pre class="mermaid"><code>graph LR
+    subgraph "Graph"
+        A[Conv1] --&gt; B[ReLU] --&gt; C[Conv2]
+    end
+
+    subgraph "Plan"
+        P1[Conv1 Plan: Winograd]
+        P2[ReLU: Fused with Conv1]
+        P3[Conv2 Plan: GEMM]
+    end
+
+    A --&gt; P1
+    B --&gt; P2
+    C --&gt; P3</code></pre>
+<h2 id="execution-modes">Execution Modes<a class="headerlink" href="#execution-modes" title="Permanent link">&para;</a></h2>
+<h3 id="synchronous-execution">Synchronous Execution<a class="headerlink" href="#synchronous-execution" title="Permanent link">&para;</a></h3>
+<p>Default mode - waits for completion:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">result</span> <span class="o">=</span> <span class="n">graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="n">handle</span><span class="p">)</span>  <span class="c1"># Blocks until done</span>
+</span></code></pre></div>
+<h3 id="with-cuda-graphs">With CUDA Graphs<a class="headerlink" href="#with-cuda-graphs" title="Permanent link">&para;</a></h3>
+<p>For repetitive execution, use CUDA graphs for minimal overhead:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cudnn</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="c1"># Build cuDNN graph</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="k">with</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="k">as</span> <span class="n">graph</span><span class="p">:</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">conv_fprop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>    <span class="n">y</span><span class="o">.</span><span class="n">set_output</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="c1"># Capture into CUDA graph (advanced)</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="c1"># This reduces CPU overhead for repeated execution</span>
+</span></code></pre></div>
+<h2 id="debugging-execution-plans">Debugging Execution Plans<a class="headerlink" href="#debugging-execution-plans" title="Permanent link">&para;</a></h2>
+<h3 id="enable-logging">Enable Logging<a class="headerlink" href="#enable-logging" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_FRONTEND_LOG_INFO</span><span class="o">=</span><span class="m">1</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_FRONTEND_LOG_FILE</span><span class="o">=</span>cudnn_log.txt
+</span></code></pre></div>
+<h3 id="check-support-issues">Check Support Issues<a class="headerlink" href="#check-support-issues" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    <span class="n">graph</span><span class="o">.</span><span class="n">check_support</span><span class="p">()</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No supported plan: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="c1"># Try different parameters or check GPU compatibility</span>
+</span></code></pre></div>
+<h3 id="common-issues">Common Issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h3>
+<div class="admonition failure">
+<p class="admonition-title">No Execution Plan Found</p>
+<p><strong>Cause</strong>: Operation not supported on your GPU</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Check GPU compute capability (need SM 7.0+)</li>
+<li>Verify cuDNN version compatibility</li>
+<li>Try different tensor sizes/shapes</li>
+<li>Use FALLBACK heuristic</li>
+</ul>
+</div>
+<div class="admonition failure">
+<p class="admonition-title">Workspace Too Large</p>
+<p><strong>Cause</strong>: Best algorithm needs more memory than available</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Reduce batch size</li>
+<li>Use workspace limit parameter</li>
+<li>Accept slower algorithm</li>
+</ul>
+</div>
+<h2 id="performance-tips">Performance Tips<a class="headerlink" href="#performance-tips" title="Permanent link">&para;</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Execution Plan Optimization</p>
+<ol>
+<li><strong>Autotune for production</strong> - The time investment pays off</li>
+<li><strong>Cache plans</strong> - Serialize and reuse</li>
+<li><strong>Right-size workspace</strong> - More workspace = faster algorithms</li>
+<li><strong>Match shapes</strong> - Consistent shapes enable plan reuse</li>
+<li><strong>Use channels-last</strong> - Best algorithm availability</li>
+</ol>
+</div>
+<h2 id="execution-plan-lifecycle-summary">Execution Plan Lifecycle Summary<a class="headerlink" href="#execution-plan-lifecycle-summary" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>graph TD
+    A[Create Graph] --&gt; B[Add Operations]
+    B --&gt; C[Validate]
+    C --&gt; D[Generate Plans]
+    D --&gt; E{Autotune?}
+    E --&gt;|Yes| F[Benchmark All Plans]
+    E --&gt;|No| G[Use Heuristic Selection]
+    F --&gt; H[Select Best Plan]
+    G --&gt; H
+    H --&gt; I[Build Plan]
+    I --&gt; J[Execute]
+    J --&gt; K{Same Shapes?}
+    K --&gt;|Yes| J
+    K --&gt;|No| A</code></pre>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Learn about memory management and performance optimization.</p>
+<p><a class="md-button md-button--primary" href="../memory-performance/">Memory &amp; Performance <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg></span></a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

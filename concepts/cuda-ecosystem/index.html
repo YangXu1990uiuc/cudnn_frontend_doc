@@ -1,0 +1,2053 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A beginner-friendly guide to NVIDIA cuDNN Frontend">
+      
+      
+        <meta name="author" content="NVIDIA Documentation Team">
+      
+      
+      
+        <link rel="prev" href="../../getting-started/quickstart/">
+      
+      
+        <link rel="next" href="../graphs/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>CUDA Ecosystem Overview - cuDNN Frontend - The Easy Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="light-green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-cuda-ecosystem" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="cuDNN Frontend - The Easy Guide" class="md-header__button md-logo" aria-label="cuDNN Frontend - The Easy Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 4h12v1h3v2h-3v2h3v2h-3v2h3v2h-3v2h3v2h-3v1H6v-1H3v-2h3v-2H3v-2h3v-2H3V9h3V7H3V5h3zm5 11v3h1v-3zm2 0v3h1v-3zm2 0v3h1v-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            cuDNN Frontend - The Easy Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CUDA Ecosystem Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="light-green"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="light-green"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/introduction/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Core Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/convolution/" class="md-tabs__link">
+          
+  
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/python/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../faq/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  FAQ & Troubleshooting
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="cuDNN Frontend - The Easy Guide" class="md-nav__button md-logo" aria-label="cuDNN Frontend - The Easy Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 4h12v1h3v2h-3v2h3v2h-3v2h3v2h-3v2h3v2h-3v1H6v-1H3v-2h3v-2H3v-2h3v-2H3V9h3V7H3V5h3zm5 11v3h1v-3zm2 0v3h1v-3zm2 0v3h1v-3z"/></svg>
+
+    </a>
+    cuDNN Frontend - The Easy Guide
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/introduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Introduction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/llm-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/first-graph/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your First Graph
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA Ecosystem Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA Ecosystem Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-big-picture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Big Picture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nvidia-software-stack-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NVIDIA Software Stack Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="NVIDIA Software Stack Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuda-the-foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CUDA: The Foundation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cublas-basic-linear-algebra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cuBLAS: Basic Linear Algebra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cudnn-deep-learning-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cuDNN: Deep Learning Primitives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cudnn-backend-vs-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cuDNN Backend vs Frontend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tensorrt-inference-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TensorRT: Inference Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nccl-multi-gpu-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NCCL: Multi-GPU Communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#framework-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Framework Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Framework Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-pytorch-uses-cudnn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How PyTorch Uses cuDNN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-cudnn-frontend-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use cuDNN Frontend Directly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gpu-architecture-awareness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU Architecture Awareness
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#typical-deep-learning-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical Deep Learning Stack
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-the-stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging the Stack
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging the Stack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check CUDA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-cudnn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check cuDNN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-pytorch-cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check PyTorch CUDA
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enable-cudnn-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enable cuDNN Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../graphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is a Graph?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tensors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tensors Explained
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../execution-plans/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Execution Plans
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../memory-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory & Performance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/convolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Convolution Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/matmul/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matrix Multiplication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/attention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attention (SDPA)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Normalization Layers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/custom-graphs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Building Custom Graphs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/cpp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++ API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Common Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ & Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="the-cuda-ecosystem">The CUDA Ecosystem<a class="headerlink" href="#the-cuda-ecosystem" title="Permanent link">&para;</a></h1>
+<p>Before diving deeper into cuDNN Frontend, let's understand where it fits in the larger NVIDIA software stack. This context will help you make better decisions and debug issues more effectively.</p>
+<h2 id="the-big-picture">The Big Picture<a class="headerlink" href="#the-big-picture" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>graph TB
+    subgraph "Your Application Layer"
+        App[Your AI/ML Application]
+    end
+
+    subgraph "Framework Layer"
+        PT[PyTorch]
+        TF[TensorFlow]
+        JAX[JAX]
+        Oth[Other Frameworks]
+    end
+
+    subgraph "Library Layer"
+        FE[cuDNN Frontend]
+        cuBLAS[cuBLAS]
+        NCCL[NCCL]
+        TRT[TensorRT]
+    end
+
+    subgraph "Backend Layer"
+        BE[cuDNN Backend]
+        CUDA[CUDA Runtime]
+    end
+
+    subgraph "Hardware Layer"
+        GPU[NVIDIA GPU]
+    end
+
+    App --&gt; PT &amp; TF &amp; JAX &amp; Oth
+    PT &amp; TF &amp; JAX &amp; Oth --&gt; FE &amp; cuBLAS &amp; NCCL &amp; TRT
+    FE --&gt; BE
+    cuBLAS &amp; BE --&gt; CUDA
+    TRT --&gt; FE &amp; BE
+    NCCL --&gt; CUDA
+    CUDA --&gt; GPU
+
+    style FE fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    style BE fill:#fff9c4
+    style GPU fill:#76ff03</code></pre>
+<h2 id="nvidia-software-stack-components">NVIDIA Software Stack Components<a class="headerlink" href="#nvidia-software-stack-components" title="Permanent link">&para;</a></h2>
+<h3 id="cuda-the-foundation">CUDA: The Foundation<a class="headerlink" href="#cuda-the-foundation" title="Permanent link">&para;</a></h3>
+<p><strong>CUDA</strong> (Compute Unified Device Architecture) is the foundation of GPU computing:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CUDA Toolkit</td>
+<td>Compiler, libraries, tools</td>
+</tr>
+<tr>
+<td>CUDA Runtime</td>
+<td>API for GPU management</td>
+</tr>
+<tr>
+<td>CUDA Driver</td>
+<td>Low-level GPU communication</td>
+</tr>
+<tr>
+<td>NVCC</td>
+<td>CUDA C++ compiler</td>
+</tr>
+</tbody>
+</table>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># CUDA provides basic GPU operations</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>  <span class="c1"># Allocates GPU memory via CUDA</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">@</span> <span class="n">x</span>  <span class="c1"># Uses CUDA for computation</span>
+</span></code></pre></div>
+<h3 id="cublas-basic-linear-algebra">cuBLAS: Basic Linear Algebra<a class="headerlink" href="#cublas-basic-linear-algebra" title="Permanent link">&para;</a></h3>
+<p><strong>cuBLAS</strong> handles fundamental linear algebra operations:</p>
+<ul>
+<li>Matrix multiplication (GEMM)</li>
+<li>Vector operations</li>
+<li>Basic transformations</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">cuBLAS vs cuDNN</p>
+<p>cuBLAS handles general linear algebra. cuDNN specializes in deep learning operations with additional optimizations like operation fusion.</p>
+</div>
+<h3 id="cudnn-deep-learning-primitives">cuDNN: Deep Learning Primitives<a class="headerlink" href="#cudnn-deep-learning-primitives" title="Permanent link">&para;</a></h3>
+<p><strong>cuDNN</strong> provides optimized implementations of deep learning operations:</p>
+<pre class="mermaid"><code>graph LR
+    subgraph "cuDNN Backend (C Library)"
+        BE1[Convolutions]
+        BE2[Attention]
+        BE3[Normalization]
+        BE4[Activations]
+        BE5[Pooling]
+    end
+
+    subgraph "cuDNN Frontend (C++/Python API)"
+        FE1[Graph Builder]
+        FE2[Automatic Optimization]
+        FE3[Heuristics Engine]
+    end
+
+    FE1 --&gt; BE1 &amp; BE2 &amp; BE3
+    FE2 --&gt; BE4 &amp; BE5</code></pre>
+<p><strong>cuDNN has two parts:</strong></p>
+<ol>
+<li><strong>cuDNN Backend</strong>: The core C library with optimized kernels</li>
+<li><strong>cuDNN Frontend</strong>: The modern API layer (what we're learning!)</li>
+</ol>
+<h3 id="cudnn-backend-vs-frontend">cuDNN Backend vs Frontend<a class="headerlink" href="#cudnn-backend-vs-frontend" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Backend (Legacy API)</th>
+<th>Frontend (Graph API)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interface</td>
+<td>C, verbose</td>
+<td>C++/Python, elegant</td>
+</tr>
+<tr>
+<td>Graph Support</td>
+<td>Manual</td>
+<td>Native</td>
+</tr>
+<tr>
+<td>Operation Fusion</td>
+<td>Manual</td>
+<td>Automatic</td>
+</tr>
+<tr>
+<td>Optimization</td>
+<td>Manual tuning</td>
+<td>Auto-tuning</td>
+</tr>
+<tr>
+<td>Code Lines</td>
+<td>Hundreds</td>
+<td>Tens</td>
+</tr>
+<tr>
+<td>Learning Curve</td>
+<td>Steep</td>
+<td>Gentle</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Backend example (verbose):</strong></p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Just to set up a convolution descriptor!</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">cudnnConvolutionDescriptor_t</span><span class="w"> </span><span class="n">convDesc</span><span class="p">;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">cudnnCreateConvolutionDescriptor</span><span class="p">(</span><span class="o">&amp;</span><span class="n">convDesc</span><span class="p">);</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">cudnnSetConvolution2dDescriptor</span><span class="p">(</span><span class="n">convDesc</span><span class="p">,</span><span class="w"> </span><span class="n">pad_h</span><span class="p">,</span><span class="w"> </span><span class="n">pad_w</span><span class="p">,</span><span class="w"> </span><span class="n">stride_h</span><span class="p">,</span><span class="w"> </span><span class="n">stride_w</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">                                 </span><span class="n">dilation_h</span><span class="p">,</span><span class="w"> </span><span class="n">dilation_w</span><span class="p">,</span><span class="w"> </span><span class="n">CUDNN_CROSS_CORRELATION</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">                                 </span><span class="n">CUDNN_DATA_FLOAT</span><span class="p">);</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1">// ... many more setup calls ...</span>
+</span></code></pre></div>
+<p><strong>Frontend equivalent (concise):</strong></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">conv_fprop</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">w</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">stride</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</span></code></pre></div>
+<h3 id="tensorrt-inference-optimization">TensorRT: Inference Optimization<a class="headerlink" href="#tensorrt-inference-optimization" title="Permanent link">&para;</a></h3>
+<p><strong>TensorRT</strong> is NVIDIA's inference optimizer:</p>
+<ul>
+<li>Optimizes trained models for deployment</li>
+<li>Layer fusion, precision calibration</li>
+<li>Uses cuDNN internally for many operations</li>
+</ul>
+<pre class="mermaid"><code>graph LR
+    Model[Trained Model] --&gt; TRT[TensorRT]
+    TRT --&gt; Opt[Optimized Engine]
+    Opt --&gt; Inference[Fast Inference]
+
+    TRT -.uses.-&gt; FE[cuDNN Frontend]</code></pre>
+<h3 id="nccl-multi-gpu-communication">NCCL: Multi-GPU Communication<a class="headerlink" href="#nccl-multi-gpu-communication" title="Permanent link">&para;</a></h3>
+<p><strong>NCCL</strong> (NVIDIA Collective Communications Library) handles:</p>
+<ul>
+<li>Multi-GPU training</li>
+<li>Distributed computing</li>
+<li>AllReduce, AllGather operations</li>
+</ul>
+<h2 id="framework-integration">Framework Integration<a class="headerlink" href="#framework-integration" title="Permanent link">&para;</a></h2>
+<h3 id="how-pytorch-uses-cudnn">How PyTorch Uses cuDNN<a class="headerlink" href="#how-pytorch-uses-cudnn" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>graph TD
+    subgraph "PyTorch"
+        PT1[torch.nn.Conv2d]
+        PT2[torch.nn.functional.scaled_dot_product_attention]
+    end
+
+    subgraph "ATen/C++ Backend"
+        AT1[at::conv2d]
+        AT2[at::_scaled_dot_product_attention]
+    end
+
+    subgraph "cuDNN Dispatch"
+        CD1{cuDNN Available?}
+        CD2[cuDNN Frontend Call]
+        CD3[Fallback Implementation]
+    end
+
+    PT1 --&gt; AT1 --&gt; CD1
+    PT2 --&gt; AT2 --&gt; CD1
+    CD1 --&gt;|Yes| CD2
+    CD1 --&gt;|No| CD3</code></pre>
+<p>When you write:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">output</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">conv2d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></code></pre></div>
+<p>PyTorch automatically:</p>
+<ol>
+<li>Checks if cuDNN is available</li>
+<li>Selects the best cuDNN algorithm</li>
+<li>Executes optimized cuDNN kernels</li>
+</ol>
+<h3 id="when-to-use-cudnn-frontend-directly">When to Use cuDNN Frontend Directly<a class="headerlink" href="#when-to-use-cudnn-frontend-directly" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Use Framework's cuDNN</th>
+<th>Use cuDNN Frontend Directly</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard layers</td>
+<td>✓</td>
+<td></td>
+</tr>
+<tr>
+<td>Custom fused operations</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Maximum performance tuning</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Framework development</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Exotic architectures</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr>
+<td>Learning GPU internals</td>
+<td></td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gpu-architecture-awareness">GPU Architecture Awareness<a class="headerlink" href="#gpu-architecture-awareness" title="Permanent link">&para;</a></h2>
+<p>cuDNN Frontend optimizes for different GPU architectures:</p>
+<table>
+<thead>
+<tr>
+<th>Architecture</th>
+<th>GPUs</th>
+<th>Key Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Volta (SM70)</td>
+<td>V100</td>
+<td>Tensor Cores (FP16)</td>
+</tr>
+<tr>
+<td>Turing (SM75)</td>
+<td>RTX 20xx, T4</td>
+<td>INT8 Tensor Cores</td>
+</tr>
+<tr>
+<td>Ampere (SM80)</td>
+<td>A100, RTX 30xx</td>
+<td>TF32, BF16, Sparsity</td>
+</tr>
+<tr>
+<td>Ada (SM89)</td>
+<td>RTX 40xx</td>
+<td>FP8 Transformer Engine</td>
+</tr>
+<tr>
+<td>Hopper (SM90)</td>
+<td>H100</td>
+<td>FP8, TMA, Async everything</td>
+</tr>
+<tr>
+<td>Blackwell (SM100)</td>
+<td>B100, RTX 50xx</td>
+<td>Even more features</td>
+</tr>
+</tbody>
+</table>
+<p>cuDNN Frontend queries your GPU and selects optimal kernels:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># cuDNN automatically detects GPU capabilities</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">handle</span> <span class="o">=</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">create_handle</span><span class="p">()</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># The same code runs optimally on any supported GPU</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">with</span> <span class="n">cudnn</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span> <span class="k">as</span> <span class="n">graph</span><span class="p">:</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">y</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">conv_fprop</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>  <span class="c1"># Uses best kernel for YOUR GPU</span>
+</span></code></pre></div>
+<h2 id="memory-hierarchy">Memory Hierarchy<a class="headerlink" href="#memory-hierarchy" title="Permanent link">&para;</a></h2>
+<p>Understanding GPU memory helps you write better code:</p>
+<pre class="mermaid"><code>graph TD
+    subgraph "Fastest"
+        REG[Registers&lt;br&gt;~20KB per SM]
+        SMEM[Shared Memory&lt;br&gt;~100KB per SM]
+    end
+
+    subgraph "Fast"
+        L2[L2 Cache&lt;br&gt;40-80MB]
+    end
+
+    subgraph "Large but Slower"
+        HBM[HBM/Global Memory&lt;br&gt;16-80GB]
+    end
+
+    REG &lt;--&gt;|Fastest| SMEM
+    SMEM &lt;--&gt;|Fast| L2
+    L2 &lt;--&gt;|Slower| HBM
+
+    style REG fill:#76ff03
+    style SMEM fill:#c8e6c9
+    style L2 fill:#fff9c4
+    style HBM fill:#ffcdd2</code></pre>
+<p><strong>Why cuDNN Frontend is fast:</strong></p>
+<ol>
+<li><strong>Operation fusion</strong> keeps data in fast registers/shared memory</li>
+<li><strong>Minimizes HBM access</strong> - the biggest bottleneck</li>
+<li><strong>Optimizes for memory coalescing</strong> - efficient memory patterns</li>
+</ol>
+<h2 id="typical-deep-learning-stack">Typical Deep Learning Stack<a class="headerlink" href="#typical-deep-learning-stack" title="Permanent link">&para;</a></h2>
+<p>For a complete AI application:</p>
+<pre class="mermaid"><code>graph TB
+    subgraph "Model Training"
+        TF[Training Framework&lt;br&gt;PyTorch/JAX]
+        TF --&gt; cuDNN_T[cuDNN Frontend]
+        TF --&gt; NCCL_T[NCCL for multi-GPU]
+    end
+
+    subgraph "Model Optimization"
+        TRT_O[TensorRT Optimizer]
+        TRT_O --&gt; INT8[INT8 Calibration]
+        TRT_O --&gt; FP8[FP8 Calibration]
+    end
+
+    subgraph "Inference Deployment"
+        TRT_I[TensorRT Runtime]
+        TRT_I --&gt; cuDNN_I[cuDNN Frontend]
+        TRT_I --&gt; Triton[Triton Server]
+    end
+
+    TF --&gt; TRT_O
+    TRT_O --&gt; TRT_I</code></pre>
+<h2 id="debugging-the-stack">Debugging the Stack<a class="headerlink" href="#debugging-the-stack" title="Permanent link">&para;</a></h2>
+<p>When things go wrong, knowing the stack helps:</p>
+<h3 id="check-cuda">Check CUDA<a class="headerlink" href="#check-cuda" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>nvidia-smi<span class="w">          </span><span class="c1"># GPU status</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>nvcc<span class="w"> </span>--version<span class="w">      </span><span class="c1"># CUDA compiler version</span>
+</span></code></pre></div>
+<h3 id="check-cudnn">Check cuDNN<a class="headerlink" href="#check-cudnn" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cudnn</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN Backend Version: </span><span class="si">{</span><span class="n">cudnn</span><span class="o">.</span><span class="n">backend_version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># e.g., 90300 means 9.3.0</span>
+</span></code></pre></div>
+<h3 id="check-pytorch-cuda">Check PyTorch CUDA<a class="headerlink" href="#check-pytorch-cuda" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PyTorch CUDA: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">cuda</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN version: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">version</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cuDNN enabled: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">enabled</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="enable-cudnn-logging">Enable cuDNN Logging<a class="headerlink" href="#enable-cudnn-logging" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_FRONTEND_LOG_INFO</span><span class="o">=</span><span class="m">1</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CUDNN_FRONTEND_LOG_FILE</span><span class="o">=</span>stdout
+</span></code></pre></div>
+<h2 id="version-compatibility">Version Compatibility<a class="headerlink" href="#version-compatibility" title="Permanent link">&para;</a></h2>
+<p>Critical for avoiding issues:</p>
+<table>
+<thead>
+<tr>
+<th>cuDNN Frontend</th>
+<th>cuDNN Backend</th>
+<th>CUDA</th>
+<th>PyTorch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0.x</td>
+<td>8.9+</td>
+<td>11.8+</td>
+<td>2.0+</td>
+</tr>
+<tr>
+<td>1.1.x</td>
+<td>9.0+</td>
+<td>12.0+</td>
+<td>2.1+</td>
+</tr>
+<tr>
+<td>1.2.x</td>
+<td>9.1+</td>
+<td>12.1+</td>
+<td>2.2+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Version Mismatches</p>
+<p>Most cuDNN errors come from version mismatches. Always verify compatibility!</p>
+</div>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Role</th>
+<th>Your Interaction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CUDA</strong></td>
+<td>GPU foundation</td>
+<td>Usually transparent</td>
+</tr>
+<tr>
+<td><strong>cuDNN Backend</strong></td>
+<td>Optimized DL kernels</td>
+<td>Via Frontend</td>
+</tr>
+<tr>
+<td><strong>cuDNN Frontend</strong></td>
+<td>Modern graph API</td>
+<td><strong>This is what you learn!</strong></td>
+</tr>
+<tr>
+<td><strong>cuBLAS</strong></td>
+<td>Linear algebra</td>
+<td>Often via frameworks</td>
+</tr>
+<tr>
+<td><strong>TensorRT</strong></td>
+<td>Inference optimization</td>
+<td>For deployment</td>
+</tr>
+<tr>
+<td><strong>NCCL</strong></td>
+<td>Multi-GPU communication</td>
+<td>For distributed training</td>
+</tr>
+</tbody>
+</table>
+<p>cuDNN Frontend is your <strong>friendly interface</strong> to the powerful cuDNN Backend, which in turn leverages CUDA to run optimized kernels on NVIDIA GPUs.</p>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Now that you understand the ecosystem, let's dive into execution plans!</p>
+<p><a class="md-button md-button--primary" href="../execution-plans/">Execution Plans <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg></span></a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
